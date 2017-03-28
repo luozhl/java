@@ -1,0 +1,14 @@
+
+ssquid:S2293"YReplace the type specification in this constructor call with the diamond operator ("<>").(£Ý¤ôýÿÿÿÿ
+ssquid:S2293"YReplace the type specification in this constructor call with the diamond operator ("<>").(÷ÒÞøùÿÿÿÿ
+msquid:S2293"YReplace the type specification in this constructor call with the diamond operator ("<>").(õæ’
+\squid:CallToDeprecatedMethod"6Remove this use of "ProducerConfig"; it is deprecated.(˜èõ×
+\squid:CallToDeprecatedMethod"6Remove this use of "ProducerConfig"; it is deprecated.(˜èõ×
+[squid:CallToDeprecatedMethod"0Remove this use of "Producer"; it is deprecated.(£Ý¤ôýÿÿÿÿ
+[squid:CallToDeprecatedMethod"0Remove this use of "Producer"; it is deprecated.(£Ý¤ôýÿÿÿÿ
+_squid:CallToDeprecatedMethod"4Remove this use of "KeyedMessage"; it is deprecated.(÷ÒÞøùÿÿÿÿ
+_squid:CallToDeprecatedMethod"4Remove this use of "KeyedMessage"; it is deprecated.(÷ÒÞøùÿÿÿÿ
+Ysquid:CallToDeprecatedMethod"4Remove this use of "KeyedMessage"; it is deprecated.(õæ’
+Ysquid:CallToDeprecatedMethod"4Remove this use of "KeyedMessage"; it is deprecated.(õæ’
+Zsquid:CallToDeprecatedMethod"4Remove this use of "KeyedMessage"; it is deprecated.(‹­åÆ
+Tsquid:S1118":Add a private constructor to hide the implicit public one.(Úƒé×úÿÿÿÿ
