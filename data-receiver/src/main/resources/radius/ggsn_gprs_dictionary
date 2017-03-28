@@ -1,0 +1,17 @@
+################################################
+# Attributes
+################################################
+
+ATTRIBUTE	Framed-IP-Address	8	ipaddr
+ATTRIBUTE	Vendor-Specific		26	octets
+ATTRIBUTE	Called-Station-Id	30	string
+ATTRIBUTE	Calling-Station-Id	31	string
+ATTRIBUTE	Acct-Status-Type	40	integer
+ATTRIBUTE	Event-Timestamp         55      date
+
+#	3GPP VENDOR
+
+VENDOR			10415	3GPP
+
+VENDORATTR      10415   3GPP-IMEISV    20      string
+VENDORATTR      10415   3GPP-RAT-Type  21       string

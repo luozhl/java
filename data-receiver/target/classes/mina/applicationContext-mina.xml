@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+        <property name="customEditors">
+            <map>
+                <entry key="java.net.SocketAddress" value="org.apache.mina.integration.beans.InetSocketAddressEditor">
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="executorFilter" class="org.apache.mina.filter.executor.ExecutorFilter">
+        <constructor-arg type="int" index="0">
+            <value>${MINA_GPRS_STATUS_CORETHREADCOUNT}</value>
+        </constructor-arg>
+        <constructor-arg type="int" index="1">
+            <value>${MINA_GPRS_STATUS_MAXTHREADCOUNT}</value>
+        </constructor-arg>
+    </bean>
+
+
+    <bean id="filterChainBuilder"
+          class="org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder">
+        <property name="filters">
+            <map>
+                <entry key="executor" value-ref="executorFilter"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="gprsStatusHandler" class="cn.iot.m2m.gatewaybridge.GPRSStatusHandler"></bean>
+
+    <bean id="gprsStatusSessionConfig" class="org.apache.mina.transport.socket.DefaultDatagramSessionConfig">
+        <property name="maxReadBufferSize" value="${MINA_GPRS_STATUS_MAXREADBUFFERSIZE}"/>
+        <property name="readBufferSize" value="${MINA_GPRS_STATUS_READBUFFERSIZE}"/>
+        <property name="receiveBufferSize" value="${MINA_GPRS_STATUS_RECEIVEBUFFERSIZE}"/>
+        <property name="sendBufferSize" value="${MINA_GPRS_STATUS_SENDBUFFERSIZE}"/>
+    </bean>
+
+    <bean id="gprsStatusAcceptor" class="org.apache.mina.transport.socket.nio.NioDatagramAcceptor"
+          init-method="bind" destroy-method="unbind">
+        <constructor-arg index="0" ref="gprsStatusSessionConfig"/>
+        <constructor-arg index="1">
+            <null/>
+        </constructor-arg>
+        <property name="defaultLocalAddress" value="${MINA_GPRS_STATUS_PORT}"/>
+        <property name="handler" ref="gprsStatusHandler"/>
+        <property name="filterChainBuilder" ref="filterChainBuilder"/>
+    </bean>
+</beans>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+            
+	<bean id="gprsDictionary" class="cn.iot.m2m.gatewaybridge.radius.GPRSDictionary" init-method="initDictionary">
+		<property name="dictionaryResource" value="radius/ggsn_gprs_dictionary"/>
+	</bean>
+	
+	<bean id="radiusDecoder" class="cn.iot.m2m.radius.coder.Decoder">
+		<property name="dictionary" ref="gprsDictionary"/>
+		<property name="sharedSecret" value="test123"/>
+	</bean>
+	
+	<bean id="radiusEncoder" class="cn.iot.m2m.radius.coder.Encoder">
+		<property name="sharedSecret" value="test123"/>
+	</bean>
+</beans>

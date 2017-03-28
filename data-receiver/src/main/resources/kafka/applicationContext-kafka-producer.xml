@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-kafka="http://www.springframework.org/schema/integration/kafka"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/integration/kafka
+                        http://www.springframework.org/schema/integration/kafka/spring-integration-kafka.xsd
+                        http://www.springframework.org/schema/integration
+                        http://www.springframework.org/schema/integration/spring-integration.xsd
+                        http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/task
+                        http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <bean id="producerProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="properties">
+            <props>
+                <prop key="topic.metadata.refresh.interval.ms">3600000</prop>
+                <prop key="message.send.max.retries">5</prop>
+                <prop key="send.buffer.bytes">5242880</prop>
+            </props>
+        </property>
+    </bean>
+
+    <int:channel id="kafkaTopic">
+        <int:queue/>
+    </int:channel>
+
+    <int-kafka:outbound-channel-adapter
+            id="kafkaOutboundChannelAdapterTopic" kafka-producer-context-ref="producerContextTopics"
+            auto-startup="true" channel="kafkaTopic" order="3">
+        <int:poller fixed-delay="1000" time-unit="MILLISECONDS"
+                    receive-timeout="1" task-executor="taskExecutor" />
+    </int-kafka:outbound-channel-adapter>
+
+    <task:executor id="taskExecutor" pool-size="5"
+                   keep-alive="120" queue-capacity="500" />
+
+    <!--key string Serializer -->
+    <bean id="stringSerializer" class="org.apache.kafka.common.serialization.StringSerializer"/>
+    <!--value Object Serializer -->
+    <bean id="objectSerializer" class="cn.iot.m2m.gatewaybridge.deal.ObjectSerializer"/>
+
+
+    <int-kafka:producer-context id="producerContextTopics" producer-properties="producerProperties" >
+        <int-kafka:producer-configurations>
+            <int-kafka:producer-configuration topic="test"
+                                              broker-list="127.0.0.1:9092"
+                                              key-serializer="stringSerializer"
+                                              value-class-type="cn.iot.m2m.gatewaybridge.CmSubsGprsStatus"
+                                              value-serializer="objectSerializer"  />
+        </int-kafka:producer-configurations>
+    </int-kafka:producer-context>
+
+</beans>

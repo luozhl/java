@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="5 seconds">
+    <property name="log.base" value="/iot/logs/gatewaybridge/receiver/receiver"/>
+
+    <!-- Console stdout -->
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS} -%5p ${PID:-} [%15.15t] %-40.40logger{39} : %m%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!--#INFO Appender (Store info message, rolling with daily,The default log
+        for 30 days) -->
+    <appender name="RollingFile"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.base}.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS} -%5p ${PID:-} [%15.15t] %-40.40logger{39} : %m%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!--#ERROR Appender (Store error message, rolling with daily,The default
+        log for 30 days) -->
+    <appender name="ErrorRollingFile"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.base}-error.%d{yyyy-MM-dd}.log
+            </fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS} -%5p ${PID:-} [%15.15t] %-40.40logger{39} : %m%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!--#TraceFile Appender (Store debug message, rolling with 100M, 10 files,
+        threshold is OFF) -->
+    <appender name="TraceRollingFile"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.base}-trace.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${log.base}-trace%i.log.zip</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>10</maxIndex>
+        </rollingPolicy>
+        <triggeringPolicy
+                class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>100MB</maxFileSize>
+        </triggeringPolicy>
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS} -%5p ${PID:-} [%15.15t] %-40.40logger{39} : %m%n
+            </pattern>
+        </encoder>
+    </appender>
+
+
+    <!--计数器日志 -->
+    <appender name="CounterRollingFile"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.base}-data.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS} -%5p ${PID:-} [%15.15t] %-40.40logger{39} : %m%n
+            </pattern>
+        </encoder>
+    </appender>
+
+
+    <!-- This is the kafkaAppender -->
+    <appender name="kafkaAppender" class="com.github.danielwegener.logback.kafka.KafkaAppender">
+        <!-- This is the default encoder that encodes every log message to an utf8-encoded string  -->
+        <encoder class="com.github.danielwegener.logback.kafka.encoding.LayoutKafkaMessageEncoder">
+            <layout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            </layout>
+        </encoder>
+        <topic>test</topic>
+        <keyingStrategy class="com.github.danielwegener.logback.kafka.keying.RoundRobinKeyingStrategy"/>
+        <deliveryStrategy class="com.github.danielwegener.logback.kafka.delivery.AsynchronousDeliveryStrategy"/>
+
+        <!-- each <producerConfig> translates to regular kafka-client config (format: key=value) -->
+        <!-- producer configs are documented here: https://kafka.apache.org/documentation.html#newproducerconfigs -->
+        <!-- bootstrap.servers is the only mandatory producerConfig -->
+        <!--<producerConfig>bootstrap.servers=node134:6667,node135:6667,node136:6667</producerConfig>-->
+        <producerConfig>bootstrap.servers=localhost:9092</producerConfig>
+
+        <!-- this is the fallback appender if kafka is not available. -->
+        <appender-ref ref="stdout"/>
+    </appender>
+
+    <logger name="cn.iot.m2m">
+        <appender-ref ref="RollingFile"/>
+    </logger>
+
+    <logger name="cn.iot.m2m">
+        <appender-ref ref="ErrorRollingFile"/>
+    </logger>
+    <logger name="cn.iot.m2m.gatewaybridge.counter" level="info" >
+        <appender-ref ref="CounterRollingFile"/>
+    </logger>
+
+    <!--<logger name="cn.iot.m2m.gatewaybridge.deal" level="info" additivity="false">-->
+        <!--<appender-ref ref="kafkaAppender"/>-->
+    <!--</logger>-->
+
+    <logger name="net.rubyeye.xmemcached" level="warn">
+        <appender-ref ref="RollingFile"/>
+    </logger>
+
+    <logger name="com.google.code.yanf4j" level="warn">
+        <appender-ref ref="RollingFile"/>
+    </logger>
+
+    <logger name="org.apache.activemq" level="warn">
+        <appender-ref ref="RollingFile"/>
+    </logger>
+
+    <logger name="org.apache.mina.filter" level="warn">
+        <appender-ref ref="RollingFile"/>
+    </logger>
+
+    <logger name="org.apache.kafka" level="warn">
+        <appender-ref ref="RollingFile"/>
+    </logger>
+
+    <root level="info">
+        <appender-ref ref="stdout"/>
+        <appender-ref ref="TraceRollingFile"/>
+    </root>
+</configuration>
+
